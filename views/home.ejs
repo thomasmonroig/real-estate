@@ -6,10 +6,31 @@
     <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 
-<body>
-    <p>Welcome to
+<h1> <p>Welcome to
         <%= message %>
+        
     </p>
+</h1>
+
+<body> 
+
+<div class="form">
+
+  <div class="tab-content">
+    <div id="car">
+      <div class="field-wrap">  <input class="model" type="text" placeholder="url"/> </div>
+      <div class="field-wrap">    <input class="price-by-day" type="text" placeholder="surface"/> </div>
+      <div class="field-wrap">    <input class="price-by-km" type="text" placeholder="price"/>  </div>
+    </div>
+    <button type="submit" class="button button-block"/>Compute Price/m²</button>  <!--<button id="compute">Compute</button>-->
+  </div>
+
+</div>
+
+<div class="form-2">
+</div>
+
+
 </body>
 
 </html>

@@ -16,27 +16,19 @@ app.use( '/assets', express.static( 'assets' ) );
 //makes the server respond to the '/' route and serving the 'home.ejs' template in the 'views' directory
 app.get( '/', function ( req, res ) {
 
-    callLeboncoin();
+    callLeboncoin(),
 
-    res.render( 'home', {
-        message: 'The Home Page!'
-    });
+        res.render( 'pages/index' );
 
 
 });
 
-
-//launch the server on the 3000 port
-app.listen( 3000, function () {
-    console.log( 'App listening on port 3000!' );
 });
 
 
-/*var request = require( 'request' );
-request( 'https://www.leboncoin.fr/ventes_immobilieres/1080226050.htm?ca=12_s', function ( error, response, body ) {
-    if ( !error && response.statusCode == 200 ) {
-        console.log( body ) // Show the HTML for the leboncoin.fr
-    };*/
+
+
+
 
 function callLeboncoin() {
 
@@ -63,3 +55,53 @@ function callLeboncoin() {
     })
 }
 
+function parseMAData( html ) {
+
+    const priceAppartRegex = /\bappartement\b : (\d+) €/mi
+    const priceHouseRegex = /\bmaison\b : (\d+) €/mi
+
+    if ( html ) {
+        const priceAppart = priceAppartRegex.exec( html ) && priceAppartRegex.exec( html ).length === 2 ? priceAppartRegex.exec( html )[1] : 0
+        const priceHouse = priceHouseRegex.exec( html ) && priceAppartRegex.exec( html ).length === 2 ? priceHouseRegex.exec( html )[1] : 0
+
+        return {
+            priceAppart: parseInt( priceAppart, 10 ),
+            priceHouse: parseInt( priceHouse, 10 )
+        }
+    }
+
+    return {}
+
+}
+
+function GetMeilleuragent( lbcData, routeResponse ) {
+    if ( lbcData.city && lbcData.city && lbcData.surface && lbcData.price ) {
+        const url = 'https://www.meilleursagents.com/prix-immobilier/{city}-{postalCode}/'.replace( '{city}', lbcData.city.replace( /\_/g, '-' ) ).replace( '{postalCode}', lbcData.postalCode );
+
+        console.log( 'URL:', url )
+
+        request( url, function ( error, response, html ) {
+
+            if ( !error ) {
+
+                let $ = cheerio.load( html );
+
+                if ( Data.priceAppart && Data.priceHouse ) {
+                    routeResponse.render( 'pages/index', {
+                        data: {
+                            lbcData,
+                            maData,
+                            deal,
+                        }
+                    })
+                }
+
+            }
+        }
+    }  ;
+
+
+    //launch the server on the 3000 port
+    app.listen( 3000, function () {
+        console.log( 'App listening on port 3000!' );
+    });
